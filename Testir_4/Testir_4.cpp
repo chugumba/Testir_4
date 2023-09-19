@@ -38,10 +38,8 @@ int main() {
 	}
 
 	//Если все точки в 3 квадранте
-	if (a.x <= 0 && a.y <= 0 && b.x <= 0 && b.y <= 0 && c.x <= 0 && c.y <= 0)
-	{
-		
-		cout << heron(distance(a, b), distance(b, c), distance(c, a));
+	if (a.x <= 0 && a.y <= 0 && b.x <= 0 && b.y <= 0 && c.x <= 0 && c.y <= 0){
+		cout << "Периметр - " << per << endl << "Площадь - " << area;
 	}
 
 	return 0;
