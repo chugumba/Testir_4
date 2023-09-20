@@ -114,7 +114,7 @@ double perimetr(vector<Point> points)
     if (points.size() == 5) {
         
         // Суммируем расстояния между соседними вершинами и замыкающими вершинами
-        double per = 0;
+        per = 0;
         for (int i = 0; i < 5; i++) {
             per += distance(points[i], points[(i + 1) % 5]);
         }
@@ -122,7 +122,7 @@ double perimetr(vector<Point> points)
     }
     else if(points.size() == 4) {
         // Суммируем расстояния между соседними вершинами и замыкающими вершинами
-        double per = 0;
+        per = 0;
         for (int i = 0; i < 4; i++) {
             per += distance(points[i], points[(i + 1) % 4]);
         }
@@ -137,22 +137,38 @@ double perimetr(vector<Point> points)
 double area(vector<Point> points)
 {
     double ar;
+    double herons;
+    double herons2;
+    double herons3;
     if (points.size() == 5) {
         // Применяем формулу Гаусса к координатам вершин
         ar = 0;
-        for (int i = 0; i < 5; i++) {
+       
+        herons = heron(distance(points[0], points[1]), distance(points[0], points[2]), distance(points[1], points[2]));
+        herons2 = heron(distance(points[0], points[2]), distance(points[0], points[3]), distance(points[2], points[3]));
+        herons3 = heron(distance(points[0], points[3]), distance(points[0], points[4]), distance(points[3], points[4]));
+
+        ar += herons + herons2 + herons3;
+        /*for (int i = 0; i < 5; i++) {
             ar += points[i].x * points[(i + 1) % 5].y - points[i].y * points[(i + 1) % 5].x;
         }
-        ar = abs(ar) / 2; // Берем модуль и делим на два
+        ar = abs(ar) / 2; // Берем модуль и делим на два*/
         return ar; // Возвращаем площадь
     }
     else if (points.size() == 4) {
         // Применяем формулу Гаусса к координатам вершин
+
         ar = 0;
+
+        herons = heron(distance(points[0], points[1]), distance(points[0], points[2]), distance(points[1], points[2]));
+        herons2 = heron(distance(points[0], points[2]), distance(points[0], points[3]), distance(points[2], points[3]));
+
+        ar += herons + herons2;
+        /*/ar = 0;
         for (int i = 0; i < 4; i++) {
             ar += points[i].x * points[(i + 1) % 4].y - points[i].y * points[(i + 1) % 4].x;
         }
-        ar = abs(ar) / 2; // Берем модуль и делим на два
+        ar = abs(ar) / 2; // Берем модуль и делим на два*/
         return ar; // Возвращаем площадь
     }
     else {
