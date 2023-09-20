@@ -9,6 +9,18 @@ struct Point {
     double x, y;
 };
 
+
+double distance(Point p1, Point p2) {
+
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
+
+double heron(double a, double b, double c) {
+    double s = (a + b + c) / 2;
+    return sqrt(s * (s - a) * (s - b) * (s - c));
+}
+
+
 // Функция для нахождения расстояния между двумя точками
 double distance(Point p1, Point p2) {
     return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -122,6 +134,9 @@ int main() {
     Point A = { ax, ay };
     Point B = { bx, by };
     Point C = { cx, cy };
+
+    double orig_per = distance(A,C) + distance(A,B) + distance(B,C);
+    double orig_area = heron(distance(A, C), distance(A, B), distance(B, C));
 
     // Находим точки пересечения сторон треугольника с осями координат
     Point AB_X = intersectX(A, B); // Точка пересечения стороны AB с осью OX
