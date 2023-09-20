@@ -9,17 +9,10 @@ struct Point {
     double x, y;
 };
 
-
-double distance(Point p1, Point p2) {
-
-    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
-}
-
 double heron(double a, double b, double c) {
     double s = (a + b + c) / 2;
     return sqrt(s * (s - a) * (s - b) * (s - c));
 }
-
 
 // Функция для нахождения расстояния между двумя точками
 double distance(Point p1, Point p2) {
@@ -115,6 +108,59 @@ bool isNegative(Point p) {
         return false; 
 }
 
+double perimetr(vector<Point> points)
+{
+    double per = 0;
+    if (points.size() == 5) {
+        
+        // Суммируем расстояния между соседними вершинами и замыкающими вершинами
+        double per = 0;
+        for (int i = 0; i < 5; i++) {
+            per += distance(points[i], points[(i + 1) % 5]);
+        }
+        return per; // Возвращаем периметр
+    }
+    else if(points.size() == 4) {
+        // Суммируем расстояния между соседними вершинами и замыкающими вершинами
+        double per = 0;
+        for (int i = 0; i < 4; i++) {
+            per += distance(points[i], points[(i + 1) % 4]);
+        }
+        return per; // Возвращаем периметр
+    }
+    else {
+        return -1;
+    }
+
+}
+
+double area(vector<Point> points)
+{
+    double ar;
+    if (points.size() == 5) {
+        // Применяем формулу Гаусса к координатам вершин
+        ar = 0;
+        for (int i = 0; i < 5; i++) {
+            ar += points[i].x * points[(i + 1) % 5].y - points[i].y * points[(i + 1) % 5].x;
+        }
+        ar = abs(ar) / 2; // Берем модуль и делим на два
+        return ar; // Возвращаем площадь
+    }
+    else if (points.size() == 4) {
+        // Применяем формулу Гаусса к координатам вершин
+        ar = 0;
+        for (int i = 0; i < 4; i++) {
+            ar += points[i].x * points[(i + 1) % 4].y - points[i].y * points[(i + 1) % 4].x;
+        }
+        ar = abs(ar) / 2; // Берем модуль и делим на два
+        return ar; // Возвращаем площадь
+    }
+    else {
+        return -1;
+    }
+
+}
+
 int main() {
 
     bool x_plus = false, y_plus = false;
@@ -124,12 +170,20 @@ int main() {
 
     double ax, ay, bx, by, cx, cy;
 
-    cout << "Координаты 1 точки" << endl; 
+    cout << "Координаты 1 точки" << endl;
     cin >> ax >> ay;
     cout << "Координаты 2 точки" << endl;
     cin >> bx >> by;
     cout << "Координаты 3 точки" << endl;
     cin >> cx >> cy;
+
+    if ((ax == bx && ay == by) || (ax == cx && ay == cy) || (bx == cx && by == cy)) {
+
+        cout << "2 или более точек совпадают, ввод некорректный";
+        return 0;
+
+    }
+
     // Задаем координаты вершин треугольника
     Point A = { ax, ay };
     Point B = { bx, by };
@@ -137,6 +191,18 @@ int main() {
 
     double orig_per = distance(A,C) + distance(A,B) + distance(B,C);
     double orig_area = heron(distance(A, C), distance(A, B), distance(B, C));
+
+    //Если в 3 квадранте нет точек
+    if (A.x > 0 && A.y > 0 && B.x > 0 && B.y > 0 && C.x > 0 && C.y > 0) {
+        cout << "В 3 квадранте нет точек" << endl;
+        return 0;
+    }
+
+    //Если все точки в 3 квадранте
+    if (A.x <= 0 && A.y <= 0 && B.x <= 0 && B.y <= 0 && C.x <= 0 && C.y <= 0) {
+        cout << "Периметр - " << orig_per << endl << "Площадь - " << orig_area;
+        return 0;
+    }
 
     // Находим точки пересечения сторон треугольника с осями координат
     Point AB_X = intersectX(A, B); // Точка пересечения стороны AB с осью OX
@@ -199,24 +265,10 @@ int main() {
         }
     }
 
-    // Выводим результаты на экран
-    cout << "Точки пересечения стороны AB с осями координат:\n";
-    printPoint(AB_X);
-    cout << "\n";
-    printPoint(AB_Y);
-    cout << "\n\n";
+    double per = perimetr(negative_points);
+    double ar = area(negative_points);
 
-    cout << "Точки пересечения стороны BC с осями координат:\n";
-    printPoint(BC_X);
-    cout << "\n";
-    printPoint(BC_Y);
-    cout << "\n\n";
-
-    cout << "Точки пересечения стороны CA с осями координат:\n";
-    printPoint(CA_X);
-    cout << "\n";
-    printPoint(CA_Y);
-    cout << "\n\n";
+    cout << "Периметр фигуры в 3 квадранте: " << per << endl << "Площадь фигуры в 3 квадранте: " << ar << endl;
 
     return 0;
 }
