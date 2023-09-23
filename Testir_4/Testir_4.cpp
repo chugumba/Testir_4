@@ -1,9 +1,9 @@
 ﻿#include <iostream>
 #include <cmath>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
-int quad_vert = 0;
 // Структура для хранения координат точки
 struct Point {
     double x, y;
@@ -100,7 +100,7 @@ void printPoint(Point p) {
 // Функция для проверки, является ли точка отрицательной по обеим координатам
 bool isNegative(Point p) {
 
-    if (p.x <= 0 && p.y <= 0)
+    if (p.x <= 0 && p.y <=0)
     {
         return true;
     }
@@ -128,13 +128,21 @@ double perimetr(vector<Point> points)
         }
         return per; // Возвращаем периметр
     }
+    else if(points.size() == 3) {
+        per = 0;
+        for (int i = 0; i < 3; i++) {
+            per += distance(points[i], points[(i + 1) % 3]);
+        }
+        return per;
+    }
     else {
+        cout << "Такой фигуры не существует " << endl;
         return -1;
     }
 
 }
 
-double area(vector<Point> points)
+double area(vector<Point> points) 
 {
     double ar;
     double herons;
@@ -149,10 +157,7 @@ double area(vector<Point> points)
         herons3 = heron(distance(points[0], points[3]), distance(points[0], points[4]), distance(points[3], points[4]));
 
         ar += herons + herons2 + herons3;
-        /*for (int i = 0; i < 5; i++) {
-            ar += points[i].x * points[(i + 1) % 5].y - points[i].y * points[(i + 1) % 5].x;
-        }
-        ar = abs(ar) / 2; // Берем модуль и делим на два*/
+        
         return ar; // Возвращаем площадь
     }
     else if (points.size() == 4) {
@@ -164,17 +169,28 @@ double area(vector<Point> points)
         herons2 = heron(distance(points[0], points[2]), distance(points[0], points[3]), distance(points[2], points[3]));
 
         ar += herons + herons2;
-        /*/ar = 0;
-        for (int i = 0; i < 4; i++) {
-            ar += points[i].x * points[(i + 1) % 4].y - points[i].y * points[(i + 1) % 4].x;
-        }
-        ar = abs(ar) / 2; // Берем модуль и делим на два*/
+        
         return ar; // Возвращаем площадь
     }
+    else if (points.size() == 3) {
+        ar = heron(distance(points[0], points[1]), distance(points[0], points[2]), distance(points[1], points[2]));;
+            return ar;
+    }
     else {
+        cout << "Такой фигуры не существует " << endl;
         return -1;
     }
 
+}
+
+
+// Перегружаем операторы == и < для сравнения точек по координатам
+bool operator==(const Point& a, const Point& b) {
+    return a.x == b.x && a.y == b.y;
+}
+
+bool operator<(const Point& a, const Point& b) {
+    return a.x < b.x || (a.x == b.x && a.y < b.y);
 }
 
 int main() {
@@ -244,13 +260,15 @@ int main() {
 
     Point min_orig = A;
 
-    for (int i = 1; i < 3; i++) {
-        if (isNegative(orig_points[i]) && min_orig.x > orig_points[i].x) {
+    for (int i = 0; i < 3; i++) {
+
+        if (isNegative(orig_points[i]) && orig_points[i].x <= min_orig.x) {
 
                 min_orig = orig_points[i];
             
         }
-        else if (min_orig.x == orig_points[i].x && min_orig.y < orig_points[i].y) {
+        else if (isNegative(orig_points[i]) && (min_orig.x == orig_points[i].x && orig_points[i].y > min_orig.y) && orig_points[i].y < 0) {
+
                 min_orig = orig_points[i];
         }
     }
@@ -259,7 +277,7 @@ int main() {
 
     for (int i = 0; i < 3; i++) {
 
-        if (isNegative(orig_points[i]) && min_orig.x != orig_points[i].x && min_orig.y != orig_points[i].y) {
+        if ((orig_points[i].y < 0 && orig_points[i].x < 0) && !(min_orig.x == orig_points[i].x && min_orig.y == orig_points[i].y)) {
 
             negative_points.push_back(orig_points[i]);
 
@@ -291,7 +309,11 @@ int main() {
 
             if(isNegative(points[i])) negative_points.push_back(points[i]);
         }
-        
+
+        if (x_plus && y_plus)
+        {
+            negative_points.push_back({ 0,0 });
+        }
     // Добавляем точки с координатами вида (X, 0) от наибольшего X к наименьшему
         if (points[0].x < points[2].x) {
 
@@ -317,6 +339,14 @@ int main() {
             if (isNegative(points[i])) negative_points.push_back(points[i]);
         }
 
+        // Сортируем вектор по возрастанию координат x и y
+        sort(negative_points.begin(), negative_points.end());
+
+        // Удаляем повторяющиеся элементы из вектора
+        auto it = unique(negative_points.begin(), negative_points.end());
+
+        // Уменьшаем размер вектора, чтобы освободить неиспользуемую память
+        negative_points.resize(distance(negative_points.begin(), it));
 
     // Выводим результаты на экран
     cout << "Точки пересечения, лежащие на отрицательных координатах:\n";
