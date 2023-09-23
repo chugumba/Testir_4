@@ -205,6 +205,8 @@ int main() {
     Point B = { bx, by };
     Point C = { cx, cy };
 
+    vector<Point> orig_points{A,B,C};
+
     double orig_per = distance(A,C) + distance(A,B) + distance(B,C);
     double orig_area = heron(distance(A, C), distance(A, B), distance(B, C));
 
@@ -236,38 +238,86 @@ int main() {
     Point Zero = {0, 0};
     // Собираем все точки пересечения в один список
     vector<Point> points = { AB_X, AB_Y, BC_X, BC_Y, CA_X, CA_Y };
-
+    
     // Создаем вектор для хранения точек пересечения, лежащих на отрицательных координатах
     vector<Point> negative_points;
 
-    // Перебираем все точки и проверяем, являются ли они отрицательными по обеим координатам
-    for (int i = 0; i < points.size(); i++) {
+    Point min_orig = A;
 
-        if (isNegative(points[i])) {
-                // Добавляем такую точку в вектор отрицательных точек
-                negative_points.push_back(points[i]);
+    for (int i = 1; i < 3; i++) {
+        if (isNegative(orig_points[i]) && min_orig.x > orig_points[i].x) {
+
+                min_orig = orig_points[i];
+            
+        }
+        else if (min_orig.x == orig_points[i].x && min_orig.y < orig_points[i].y) {
+                min_orig = orig_points[i];
         }
     }
 
-    if (isNegative(A))
-    {
-        negative_points.push_back(A);
+    negative_points.push_back(min_orig);
+
+    for (int i = 0; i < 3; i++) {
+
+        if (isNegative(orig_points[i]) && min_orig.x != orig_points[i].x && min_orig.y != orig_points[i].y) {
+
+            negative_points.push_back(orig_points[i]);
+
+        }
     }
 
-    if (isNegative(B))
-    {
-        negative_points.push_back(B);
-    }
+    // Добавляем точки с координатами вида (0, Y) от наименьшего Y к наибольшему
+        if (points[1].y > points[3].y) {
 
-    if (isNegative(C))
-    {
-        negative_points.push_back(C);
-    }
+            min_orig = points[1];
+            points[1] = points[3];
+            points[3] = min_orig;
+        
+        }
+        if (points[3].y > points[5].y) {
 
-    if (x_plus && y_plus)
-    {
-        negative_points.push_back({0,0});
-    }
+            min_orig = points[3];
+            points[3] = points[5];
+            points[5] = min_orig;
+        }
+        if (points[1].y > points[5].y) {
+
+            min_orig = points[1];
+            points[1] = points[5];
+            points[5] = min_orig;
+        }
+
+        for (int i = 1; i <= 5; i += 2) {
+
+            if(isNegative(points[i])) negative_points.push_back(points[i]);
+        }
+        
+    // Добавляем точки с координатами вида (X, 0) от наибольшего X к наименьшему
+        if (points[0].x < points[2].x) {
+
+            min_orig = points[0];
+            points[0] = points[2];
+            points[2] = min_orig;
+
+        }
+        if (points[2].x < points[4].x) {
+
+            min_orig = points[2];
+            points[2] = points[4];
+            points[4] = min_orig;
+        }
+        if (points[0].x < points[4].x) {
+
+            min_orig = points[0];
+            points[0] = points[4];
+            points[4] = min_orig;
+        }
+
+        for (int i = 0; i <= 4; i += 2) {
+            if (isNegative(points[i])) negative_points.push_back(points[i]);
+        }
+
+
     // Выводим результаты на экран
     cout << "Точки пересечения, лежащие на отрицательных координатах:\n";
 
