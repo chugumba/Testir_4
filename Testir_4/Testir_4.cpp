@@ -167,6 +167,10 @@ double area(vector<Point> points)
         return ar; // Возвращаем площадь
     }
     else if (points.size() == 3) {
+        if (0.5 * abs((points[0].x - points[2].x) * (points[1].y - points[2].y) - (points[1].x - points[2].x) * (points[0].y - points[2].y)) == 0)
+        {
+            return -1;
+        }
         ar = heron(distance(points[0], points[1]), distance(points[0], points[2]), distance(points[1], points[2]));;
             return ar;
     }
@@ -359,9 +363,15 @@ int calculation()
         return 0;
     }
 
+    if (0.5 * abs((triangle[0].x - triangle[2].x) * (triangle[1].y - triangle[2].y) - (triangle[1].x - triangle[2].x) * (triangle[0].y - triangle[2].y)) == 0)
+    {
+        cout << "Фигуры не существет, точки образуют прямую. " << endl ;
+        return 0;
+    }
+
     //Если все точки в 3 квадранте
     if (triangle[0].x <= 0 && triangle[0].y <= 0 && triangle[1].x <= 0 && triangle[1].y <= 0 && triangle[2].x <= 0 && triangle[2].y <= 0) {
-        cout << "Периметр - " << orig_per << endl << "Площадь - " << orig_area;
+        cout << "Периметр - " << orig_per << endl << "Площадь - " << orig_area << endl;
         return 0;
     }
 
