@@ -176,7 +176,7 @@ double area(vector<Point> points)
     }
 
 }
-// Перегружаем операторы == и < для сравнения точек по координатам
+// Перегружаем оператор == для сравнения точек по координатам
 bool operator==(const Point& a, const Point& b) {
     return a.x == b.x && a.y == b.y;
 }
