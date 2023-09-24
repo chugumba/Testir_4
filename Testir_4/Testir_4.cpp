@@ -13,19 +13,16 @@ double heron(double a, double b, double c) {
     double s = (a + b + c) / 2;
     return sqrt(s * (s - a) * (s - b) * (s - c));
 }
-
 // Функция для нахождения расстояния между двумя точками
 double distance(Point p1, Point p2) {
     return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
-
 // Функция для проверки, лежит ли точка на отрезке
 bool onSegment(Point p, Point p1, Point p2) {
     // Сравниваем расстояния с некоторой малой погрешностью
     double eps = 1e-6;
     return abs(distance(p, p1) + distance(p, p2) - distance(p1, p2)) < eps;
 }
-
 // Функция для нахождения точки пересечения прямой, проходящей через две точки, с осью OX
 Point intersectX(Point p1, Point p2) {
     Point res;
@@ -48,7 +45,6 @@ Point intersectX(Point p1, Point p2) {
     }
     return res;
 }
-
 // Функция для нахождения точки пересечения прямой, проходящей через две точки, с осью OY
 Point intersectY(Point p1, Point p2) {
     Point res;
@@ -89,14 +85,12 @@ bool is_positive_Y(Point p, bool a)
     }
     else return a;
 }
-
 // Функция для вывода координат точки на экран
 void printPoint(Point p) {
 
     if (!isnan(p.x) && !isnan(p.y))
         cout << "(" << p.x << ", " << p.y << ")";
 }
-
 // Функция для проверки, является ли точка отрицательной по обеим координатам
 bool isNegative(Point p) {
 
@@ -107,7 +101,7 @@ bool isNegative(Point p) {
     else
         return false; 
 }
-
+//Вычисляет периметр фигуры
 double perimetr(vector<Point> points)
 {
     double per = 0;
@@ -141,7 +135,7 @@ double perimetr(vector<Point> points)
     }
 
 }
-
+//Вычисляет площадь фигуры
 double area(vector<Point> points) 
 {
     double ar;
@@ -182,8 +176,6 @@ double area(vector<Point> points)
     }
 
 }
-
-
 // Перегружаем операторы == и < для сравнения точек по координатам
 bool operator==(const Point& a, const Point& b) {
     return a.x == b.x && a.y == b.y;
@@ -277,7 +269,7 @@ int main() {
 
     for (int i = 0; i < 3; i++) {
 
-        if ((orig_points[i].y < 0 && orig_points[i].x < 0) && !(min_orig.x == orig_points[i].x && min_orig.y == orig_points[i].y)) {
+        if ((orig_points[i].y <= 0 && orig_points[i].x <= 0) && !(min_orig == orig_points[i])){
 
             negative_points.push_back(orig_points[i]);
 
@@ -307,7 +299,7 @@ int main() {
 
         for (int i = 1; i <= 5; i += 2) {
 
-            if(isNegative(points[i])) negative_points.push_back(points[i]);
+            if(isNegative(points[i]) && find(negative_points.begin(), negative_points.end(), points[i]) == negative_points.end()) negative_points.push_back(points[i]);
         }
 
         if (x_plus && y_plus)
@@ -336,18 +328,10 @@ int main() {
         }
 
         for (int i = 0; i <= 4; i += 2) {
-            if (isNegative(points[i])) negative_points.push_back(points[i]);
+            if (isNegative(points[i]) && find(negative_points.begin(), negative_points.end(), points[i]) == negative_points.end()) negative_points.push_back(points[i]);
         }
 
-        // Сортируем вектор по возрастанию координат x и y
-        sort(negative_points.begin(), negative_points.end());
-
-        // Удаляем повторяющиеся элементы из вектора
-        auto it = unique(negative_points.begin(), negative_points.end());
-
-        // Уменьшаем размер вектора, чтобы освободить неиспользуемую память
-        negative_points.resize(distance(negative_points.begin(), it));
-
+      
     // Выводим результаты на экран
     cout << "Точки пересечения, лежащие на отрицательных координатах:\n";
 
