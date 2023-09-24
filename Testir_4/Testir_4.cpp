@@ -8,7 +8,7 @@ using namespace std;
 struct Point {
     double x, y;
 };
-
+// Функция, которая использует формулу Герона для вычисления площади
 double heron(double a, double b, double c) {
     double s = (a + b + c) / 2;
     return sqrt(s * (s - a) * (s - b) * (s - c));
@@ -180,17 +180,120 @@ double area(vector<Point> points)
 bool operator==(const Point& a, const Point& b) {
     return a.x == b.x && a.y == b.y;
 }
+// Выводим результаты на экран
+void display(vector<Point>& negative_points)
+{
+    cout << "Точки пересечения, лежащие на отрицательных координатах:" << endl;
 
-bool operator<(const Point& a, const Point& b) {
-    return a.x < b.x || (a.x == b.x && a.y < b.y);
+    if (negative_points.empty()) {
+        cout << "Таких точек нет." << endl;
+    }
+    else {
+        for (Point p : negative_points) {
+            printPoint(p);
+            cout << endl;
+        }
+    }
+
+    double per = perimetr(negative_points);
+    double ar = area(negative_points);
+
+    cout << "Периметр фигуры в 3 квадранте: " << per << endl << "Площадь фигуры в 3 квадранте: " << ar << endl;
 }
+// Заполняем негативные значения
+vector<Point> negative_fill(vector<Point>& points, vector<Point>& triangle, bool x_plus, bool y_plus)
+{
+    // Вектор для хранения точек пересечения, лежащих на отрицательных координатах
+    vector<Point> negative_points;
+    Point min_orig = triangle[0];
 
-int main() {
+    for (int i = 0; i < 3; i++) {
 
+        if (isNegative(triangle[i]) && triangle[i].x <= min_orig.x) {
+
+            min_orig = triangle[i];
+
+        }
+        else if (isNegative(triangle[i]) && (min_orig.x == triangle[i].x && triangle[i].y > min_orig.y) && triangle[i].y < 0) {
+
+            min_orig = triangle[i];
+        }
+    }
+
+    negative_points.push_back(min_orig);
+
+    for (int i = 0; i < 3; i++) {
+
+        if ((triangle[i].y <= 0 && triangle[i].x <= 0) && !(min_orig == triangle[i])) {
+
+            negative_points.push_back(triangle[i]);
+
+        }
+    }
+
+    // Добавляем точки с координатами вида (0, Y) от наименьшего Y к наибольшему
+    if (points[1].y > points[3].y) {
+
+        min_orig = points[1];
+        points[1] = points[3];
+        points[3] = min_orig;
+
+    }
+    if (points[3].y > points[5].y) {
+
+        min_orig = points[3];
+        points[3] = points[5];
+        points[5] = min_orig;
+    }
+    if (points[1].y > points[5].y) {
+
+        min_orig = points[1];
+        points[1] = points[5];
+        points[5] = min_orig;
+    }
+
+    for (int i = 1; i <= 5; i += 2) {
+
+        if (isNegative(points[i]) && find(negative_points.begin(), negative_points.end(), points[i]) == negative_points.end() && !(points[i].x == 0 && points[i].y == 0))
+            negative_points.push_back(points[i]);
+    }
+
+    if (x_plus && y_plus)
+    {
+        negative_points.push_back({ 0,0 });
+    }
+    // Добавляем точки с координатами вида (X, 0) от наибольшего X к наименьшему
+    if (points[0].x < points[2].x) {
+
+        min_orig = points[0];
+        points[0] = points[2];
+        points[2] = min_orig;
+
+    }
+    if (points[2].x < points[4].x) {
+
+        min_orig = points[2];
+        points[2] = points[4];
+        points[4] = min_orig;
+    }
+    if (points[0].x < points[4].x) {
+
+        min_orig = points[0];
+        points[0] = points[4];
+        points[4] = min_orig;
+    }
+
+    for (int i = 0; i <= 4; i += 2) {
+        if (isNegative(points[i]) && find(negative_points.begin(), negative_points.end(), points[i]) == negative_points.end() && !(points[i].x == 0 && points[i].y == 0))
+            negative_points.push_back(points[i]);
+    }
+
+    return negative_points;
+}
+// Проводим все вычисления
+int calculation()
+{
     bool x_plus = false, y_plus = false;
-
-    setlocale(LC_ALL, "Russian");
-
 
     double ax, ay, bx, by, cx, cy;
 
@@ -203,152 +306,87 @@ int main() {
 
     if ((ax == bx && ay == by) || (ax == cx && ay == cy) || (bx == cx && by == cy)) {
 
-        cout << "2 или более точек совпадают, ввод некорректный";
+        cout << "2 или более точек совпадают, ввод некорректный" << endl;
         return 0;
 
     }
 
-    // Задаем координаты вершин треугольника
-    Point A = { ax, ay };
-    Point B = { bx, by };
-    Point C = { cx, cy };
+    // Задаем координаты вершин треугольника 0 - A, 1 - B, 2 - C
+    vector<Point> triangle{ { ax, ay } ,{ bx, by },{ cx, cy } };
 
-    vector<Point> orig_points{A,B,C};
-
-    double orig_per = distance(A,C) + distance(A,B) + distance(B,C);
-    double orig_area = heron(distance(A, C), distance(A, B), distance(B, C));
+    // Площадь и периметр оригинального треугольника
+    double orig_per = distance(triangle[0], triangle[2]) + distance(triangle[0], triangle[1]) + distance(triangle[1], triangle[2]);
+    double orig_area = heron(distance(triangle[0], triangle[2]), distance(triangle[0], triangle[1]), distance(triangle[1], triangle[2]));
 
     //Если в 3 квадранте нет точек
-    if (A.x > 0 && A.y > 0 && B.x > 0 && B.y > 0 && C.x > 0 && C.y > 0) {
+    if (triangle[0].x > 0 && triangle[0].y > 0 && triangle[1].x > 0 && triangle[1].y > 0 && triangle[2].x > 0 && triangle[2].y > 0) {
         cout << "В 3 квадранте нет точек" << endl;
         return 0;
     }
 
     //Если все точки в 3 квадранте
-    if (A.x <= 0 && A.y <= 0 && B.x <= 0 && B.y <= 0 && C.x <= 0 && C.y <= 0) {
+    if (triangle[0].x <= 0 && triangle[0].y <= 0 && triangle[1].x <= 0 && triangle[1].y <= 0 && triangle[2].x <= 0 && triangle[2].y <= 0) {
         cout << "Периметр - " << orig_per << endl << "Площадь - " << orig_area;
         return 0;
     }
 
     // Находим точки пересечения сторон треугольника с осями координат
-    Point AB_X = intersectX(A, B); // Точка пересечения стороны AB с осью OX
+    Point AB_X = intersectX(triangle[0], triangle[1]); // Точка пересечения стороны AB с осью OX
     x_plus = is_positive_X(AB_X, x_plus);
-    Point AB_Y = intersectY(A, B); // Точка пересечения стороны AB с осью OY
+    Point AB_Y = intersectY(triangle[0], triangle[1]); // Точка пересечения стороны AB с осью OY
     y_plus = is_positive_Y(AB_Y, y_plus);
-    Point BC_X = intersectX(B, C); // Точка пересечения стороны BC с осью OX
+    Point BC_X = intersectX(triangle[1], triangle[2]); // Точка пересечения стороны BC с осью OX
     x_plus = is_positive_X(BC_X, x_plus);
-    Point BC_Y = intersectY(B, C); // Точка пересечения стороны BC с осью OY
+    Point BC_Y = intersectY(triangle[1], triangle[2]); // Точка пересечения стороны BC с осью OY
     y_plus = is_positive_Y(BC_Y, y_plus);
-    Point CA_X = intersectX(C, A); // Точка пересечения стороны CA с осью OX
-    x_plus =  is_positive_X(CA_X, x_plus);
-    Point CA_Y = intersectY(C, A); // Точка пересечения стороны CA с осью OY
+    Point CA_X = intersectX(triangle[2], triangle[0]); // Точка пересечения стороны CA с осью OX
+    x_plus = is_positive_X(CA_X, x_plus);
+    Point CA_Y = intersectY(triangle[2], triangle[0]); // Точка пересечения стороны CA с осью OY
     y_plus = is_positive_Y(CA_Y, y_plus);
-    Point Zero = {0, 0};
+
     // Собираем все точки пересечения в один список
     vector<Point> points = { AB_X, AB_Y, BC_X, BC_Y, CA_X, CA_Y };
-    
-    // Создаем вектор для хранения точек пересечения, лежащих на отрицательных координатах
-    vector<Point> negative_points;
 
-    Point min_orig = A;
+    vector <Point> neg = negative_fill(points, triangle, x_plus, y_plus);
+    display(neg);
+}
+//Меню
+void menu()
+{
+    int ch = 0;
+    do{
+        cout << "1 - Ввести координаты треугольника." << endl
+            << "2 - Закончить работу программы." << endl;
 
-    for (int i = 0; i < 3; i++) {
+        cin >> ch;
 
-        if (isNegative(orig_points[i]) && orig_points[i].x <= min_orig.x) {
+        switch (ch){
 
-                min_orig = orig_points[i];
-            
-        }
-        else if (isNegative(orig_points[i]) && (min_orig.x == orig_points[i].x && orig_points[i].y > min_orig.y) && orig_points[i].y < 0) {
-
-                min_orig = orig_points[i];
-        }
-    }
-
-    negative_points.push_back(min_orig);
-
-    for (int i = 0; i < 3; i++) {
-
-        if ((orig_points[i].y <= 0 && orig_points[i].x <= 0) && !(min_orig == orig_points[i])){
-
-            negative_points.push_back(orig_points[i]);
-
-        }
-    }
-
-    // Добавляем точки с координатами вида (0, Y) от наименьшего Y к наибольшему
-        if (points[1].y > points[3].y) {
-
-            min_orig = points[1];
-            points[1] = points[3];
-            points[3] = min_orig;
-        
-        }
-        if (points[3].y > points[5].y) {
-
-            min_orig = points[3];
-            points[3] = points[5];
-            points[5] = min_orig;
-        }
-        if (points[1].y > points[5].y) {
-
-            min_orig = points[1];
-            points[1] = points[5];
-            points[5] = min_orig;
+            case 1:
+            {
+                calculation();
+                break;
+            }
+            case 2:
+            {
+                break;
+            }
+            default:
+            {
+                cout << "Введите корректное значение." << endl;
+                break;
+            }
         }
 
-        for (int i = 1; i <= 5; i += 2) {
 
-            if(isNegative(points[i]) && find(negative_points.begin(), negative_points.end(), points[i]) == negative_points.end()) negative_points.push_back(points[i]);
-        }
+    } while (ch != 2);
+}
 
-        if (x_plus && y_plus)
-        {
-            negative_points.push_back({ 0,0 });
-        }
-    // Добавляем точки с координатами вида (X, 0) от наибольшего X к наименьшему
-        if (points[0].x < points[2].x) {
+int main() {
 
-            min_orig = points[0];
-            points[0] = points[2];
-            points[2] = min_orig;
+    setlocale(LC_ALL, "Russian");
 
-        }
-        if (points[2].x < points[4].x) {
-
-            min_orig = points[2];
-            points[2] = points[4];
-            points[4] = min_orig;
-        }
-        if (points[0].x < points[4].x) {
-
-            min_orig = points[0];
-            points[0] = points[4];
-            points[4] = min_orig;
-        }
-
-        for (int i = 0; i <= 4; i += 2) {
-            if (isNegative(points[i]) && find(negative_points.begin(), negative_points.end(), points[i]) == negative_points.end()) negative_points.push_back(points[i]);
-        }
-
-      
-    // Выводим результаты на экран
-    cout << "Точки пересечения, лежащие на отрицательных координатах:\n";
-
-    if (negative_points.empty()) {
-        cout << "Таких точек нет.\n";
-    }
-    else {
-        for (Point p : negative_points) {
-            printPoint(p);
-            cout << "\n";
-        }
-    }
-
-    double per = perimetr(negative_points);
-    double ar = area(negative_points);
-
-    cout << "Периметр фигуры в 3 квадранте: " << per << endl << "Площадь фигуры в 3 квадранте: " << ar << endl;
+    menu();
 
     return 0;
 }
