@@ -275,14 +275,25 @@ vector<Point> negative_fill(vector<Point>& points, vector<Point>& triangle, bool
 
     for (int i = 1; i <= 5; i += 2) {
 
-        if (isNegative(points[i]) && find(negative_points.begin(), negative_points.end(), points[i]) == negative_points.end() && !(points[i].x == 0 && points[i].y == 0))
+        if (isNegative(points[i]) && find(negative_points.begin(), negative_points.end(), points[i]) == negative_points.end()) //&& !(points[i].x == 0 && points[i].y == 0))
             negative_points.push_back(points[i]);
     }
 
-    if ((x_plus && y_plus)&&((points[0].x != 0 && points[0].y != 0) && (points[1].x != 0 && points[1].y != 0) && (points[2].x != 0 && points[2].y != 0)))
+    if ((x_plus && y_plus)&&((triangle[0].x != 0 && triangle[0].y != 0) && (triangle[1].x != 0 && triangle[1].y != 0) && (triangle[2].x != 0 && triangle[2].y != 0)))
     {
+
+            negative_points.push_back({ 0,0 });
+
+    }
+    if ((triangle[0].x == 0 && triangle[1].x == 0 && triangle[0].y < 0 && triangle[1].y > 0) ||
+        (triangle[0].x == 0 && triangle[2].x == 0 && triangle[0].y < 0 && triangle[2].y > 0) ||
+        (triangle[0].x == 0 && triangle[1].x == 0 && triangle[1].y < 0 && triangle[0].y > 0) ||
+        (triangle[0].x == 0 && triangle[2].x == 0 && triangle[2].y < 0 && triangle[0].y > 0))
+    {
+
         negative_points.push_back({ 0,0 });
     }
+
     // Добавляем точки с координатами вида (X, 0) от наибольшего X к наименьшему
     if (points[0].x < points[2].x) {
 
