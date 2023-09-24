@@ -130,7 +130,7 @@ double perimetr(vector<Point> points)
         return per;
     }
     else {
-        cout << "Такой фигуры не существует " << endl;
+        //cout << "Такой фигуры не существует " << endl;
         return -1;
     }
 
@@ -171,7 +171,7 @@ double area(vector<Point> points)
             return ar;
     }
     else {
-        cout << "Такой фигуры не существует " << endl;
+        //cout << "Такой фигуры не существует " << endl;
         return -1;
     }
 
@@ -179,6 +179,20 @@ double area(vector<Point> points)
 // Перегружаем операторы == и < для сравнения точек по координатам
 bool operator==(const Point& a, const Point& b) {
     return a.x == b.x && a.y == b.y;
+}
+//Проверка пореектного ввода
+bool input_check()
+{
+    bool check = true;
+    //проверка ввода
+    while (cin.fail())
+    {
+        check = false;
+        cout << "Некорректный ввод." << endl;
+        cin.clear();
+        cin.ignore(1000, '\n');
+    }
+    return check;
 }
 // Выводим результаты на экран
 void display(vector<Point>& negative_points)
@@ -197,8 +211,11 @@ void display(vector<Point>& negative_points)
 
     double per = perimetr(negative_points);
     double ar = area(negative_points);
-
-    cout << "Периметр фигуры в 3 квадранте: " << per << endl << "Площадь фигуры в 3 квадранте: " << ar << endl;
+    
+    if (per != -1 && ar != -1)
+        cout << "Периметр фигуры в 3 квадранте: " << per << endl << "Площадь фигуры в 3 квадранте: " << ar << endl;
+    else
+        cout << "Фигуры в 3 квадранте не существует" << endl;
 }
 // Заполняем негативные значения
 vector<Point> negative_fill(vector<Point>& points, vector<Point>& triangle, bool x_plus, bool y_plus)
@@ -299,10 +316,28 @@ int calculation()
 
     cout << "Координаты 1 точки" << endl;
     cin >> ax >> ay;
+
+    while (!input_check())
+    {
+        cout << "Координаты 1 точки" << endl;
+        cin >> ax >> ay;
+    }
     cout << "Координаты 2 точки" << endl;
     cin >> bx >> by;
+
+    while (!input_check())
+    {
+        cout << "Координаты 2 точки" << endl;
+        cin >> bx >> by;
+    }
     cout << "Координаты 3 точки" << endl;
     cin >> cx >> cy;
+
+    while (!input_check())
+    {
+        cout << "Координаты 3 точки" << endl;
+        cin >> cx >> cy;
+    }
 
     if ((ax == bx && ay == by) || (ax == cx && ay == cy) || (bx == cx && by == cy)) {
 
@@ -359,6 +394,7 @@ void menu()
             << "2 - Закончить работу программы." << endl;
 
         cin >> ch;
+        input_check();
 
         switch (ch){
 
