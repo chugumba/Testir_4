@@ -279,24 +279,13 @@ vector<Point> negative_fill(vector<Point>& points, vector<Point>& triangle, bool
             negative_points.push_back(points[i]);
     }
 
-    if ((x_plus && y_plus)
-       // &&(!(triangle[0].x == 0 && triangle[0].y == 0) && !(triangle[1].x == 0 && triangle[1].y == 0) && !(triangle[2].x == 0 && triangle[2].y == 0))
-        && (!(triangle[0] == zero) && !(triangle[1] == zero) && !(triangle[2] == zero)
-        ))
+    if ((x_plus && y_plus) && (!(triangle[0] == zero) && !(triangle[1] == zero) && !(triangle[2] == zero)))
     {
 
             negative_points.push_back({ 0,0 });
 
     }
-    /*if ((triangle[0].x == 0 && triangle[1].x == 0 && triangle[0].y < 0 && triangle[1].y > 0) ||
-        (triangle[0].x == 0 && triangle[2].x == 0 && triangle[0].y < 0 && triangle[2].y > 0) ||
-        (triangle[0].x == 0 && triangle[1].x == 0 && triangle[1].y < 0 && triangle[0].y > 0) ||
-        (triangle[0].x == 0 && triangle[2].x == 0 && triangle[2].y < 0 && triangle[0].y > 0))
-    {
-
-        negative_points.push_back({ 0,0 });
-    }
-    */
+   
     // Добавляем точки с координатами вида (X, 0) от наибольшего X к наименьшему
     if (points[0].x < points[2].x) {
 
@@ -411,6 +400,8 @@ int calculation()
 
     vector <Point> neg = negative_fill(points, triangle, x_plus, y_plus);
     display(neg);
+
+    return 0;
 }
 //Меню
 void menu()
